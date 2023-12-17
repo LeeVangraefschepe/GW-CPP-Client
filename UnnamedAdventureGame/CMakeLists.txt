@@ -20,7 +20,8 @@ add_executable(UnnamedAdventureGame ${WIN32_EXECUTABLE}
     "Components/PrintCollision.cpp"
 	"Components/ApplyForces.cpp" 
 	"Components/ColliderScaler.cpp" 
-	"Components/PrintVelocity.cpp")
+	"Components/PrintVelocity.cpp"
+	"Packets/JsonPacket.cpp")
 
 target_include_directories(
 	LeapEngine PUBLIC 
@@ -40,7 +41,7 @@ target_link_libraries(
 	AudioEngine
 	NetworkingEngine
 	EngineUtils)
-target_include_directories(UnnamedAdventureGame PUBLIC ${LeapEngineIncludeDir})
+target_include_directories(UnnamedAdventureGame PUBLIC ${LeapEngineIncludeDir} ${RAPIDJSON_DIR})
 target_link_libraries(UnnamedAdventureGame PUBLIC LeapEngine ${GLFW_LIBRARY_DIR})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
