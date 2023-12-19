@@ -12,6 +12,7 @@
 #include "../Components/InfoUI.h"
 #include "../Components/WindowManager.h"
 #include "../Components/FreeCamMovement.h"
+#include "../Benchmarks/ClientNetwork.h"
 
 void unag::MainMenuScene::Load(leap::Scene& scene)
 {
@@ -35,6 +36,9 @@ void unag::MainMenuScene::Load(leap::Scene& scene)
 
 	const auto info{ scene.CreateGameObject("Info") };
 	info->AddComponent<InfoUI>();
+
+	const auto networking{ scene.CreateGameObject("Networking") };
+	networking->AddComponent<ClientNetwork>();
 
 	const auto windowControls{ scene.CreateGameObject("Window") };
 	windowControls->AddComponent<WindowManager>();

@@ -21,7 +21,9 @@ add_executable(UnnamedAdventureGame ${WIN32_EXECUTABLE}
 	"Components/ApplyForces.cpp" 
 	"Components/ColliderScaler.cpp" 
 	"Components/PrintVelocity.cpp"
-	"Packets/JsonPacket.cpp")
+	"Packets/JsonPacket.cpp"
+	"Benchmarks/ClientNetwork.cpp"
+	"Benchmarks/Json.cpp")
 
 target_include_directories(
 	LeapEngine PUBLIC 

@@ -3,7 +3,7 @@
 #include <vector>
 #include <RapidJson/document.h>
 
-namespace vox::networking
+namespace unag::networking
 {
 	class JsonPacket final : public leap::networking::BasePacket
 	{
@@ -18,6 +18,7 @@ namespace vox::networking
 
         void Write(rapidjson::Value key, rapidjson::Value& value);
         void Write(rapidjson::Value key, const std::vector<int>& value);
+        void GenerateString();
         rapidjson::Value& Read(const char* key);
         rapidjson::Value& ReadArray(const char* key, int& size);
 	private:

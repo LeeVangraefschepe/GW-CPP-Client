@@ -3,7 +3,7 @@
 #include <Debug.h>
 #include <sstream>
 
-vox::networking::JsonPacket::JsonPacket(int headerId) : m_HeaderId(headerId)
+unag::networking::JsonPacket::JsonPacket(int headerId) : m_HeaderId(headerId)
 {
 	m_Document.SetObject();
 	rapidjson::Value newKey{ "PacketId" };
@@ -11,7 +11,7 @@ vox::networking::JsonPacket::JsonPacket(int headerId) : m_HeaderId(headerId)
 	m_Document.AddMember(newKey, newValue, m_Document.GetAllocator());
 }
 
-void vox::networking::JsonPacket::SetData(std::vector<char>& data)
+void unag::networking::JsonPacket::SetData(std::vector<char>& data)
 {
 	m_Document = rapidjson::Document{};
 	if (m_Document.Parse(data.data()).HasParseError())
@@ -22,7 +22,7 @@ void vox::networking::JsonPacket::SetData(std::vector<char>& data)
 	}
 }
 
-void vox::networking::JsonPacket::SetData(rapidjson::Document doc)
+void unag::networking::JsonPacket::SetData(rapidjson::Document doc)
 {
 	m_Document = std::move(doc);
 	rapidjson::Value newKey{ "PacketId" };
@@ -30,17 +30,18 @@ void vox::networking::JsonPacket::SetData(rapidjson::Document doc)
 	m_Document.AddMember(newKey, newValue, m_Document.GetAllocator());
 }
 
-char* vox::networking::JsonPacket::GetData()
+char* unag::networking::JsonPacket::GetData()
 {
+	//Todo: Add document to string
 	return m_Data.data();
 }
 
-rapidjson::Document& vox::networking::JsonPacket::GetDocument()
+rapidjson::Document& unag::networking::JsonPacket::GetDocument()
 {
 	return m_Document;
 }
 
-int vox::networking::JsonPacket::ReadHeaderId()
+int unag::networking::JsonPacket::ReadHeaderId()
 {
     if (m_Document.HasMember("PacketId"))
 	{
@@ -54,12 +55,12 @@ int vox::networking::JsonPacket::ReadHeaderId()
 	return -1;
 }
 
-void vox::networking::JsonPacket::Write(rapidjson::Value key, rapidjson::Value& value)
+void unag::networking::JsonPacket::Write(rapidjson::Value key, rapidjson::Value& value)
 {
 	m_Document.AddMember(key, value, m_Document.GetAllocator());
 }
 
-void vox::networking::JsonPacket::Write(rapidjson::Value key, const std::vector<int>& value)
+void unag::networking::JsonPacket::Write(rapidjson::Value key, const std::vector<int>& value)
 {
 	rapidjson::Value jsonArray(rapidjson::kArrayType);
 	for (const auto& number : value)
@@ -69,7 +70,15 @@ void vox::networking::JsonPacket::Write(rapidjson::Value key, const std::vector<
 	Write(std::move(key), jsonArray);
 }
 
-rapidjson::Value& vox::networking::JsonPacket::Read(const char* key)
+void unag::networking::JsonPacket::GenerateString()
+{
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer writer{ buffer };
+	m_Document.Accept(writer);
+	m_Data = std::vector<char>{ buffer.GetString(), buffer.GetString() + buffer.GetSize() };
+}
+
+rapidjson::Value& unag::networking::JsonPacket::Read(const char* key)
 {
 	if (m_Document.HasMember(key))
 	{
@@ -80,7 +89,7 @@ rapidjson::Value& vox::networking::JsonPacket::Read(const char* key)
 	return m_Empty;
 }
 
-rapidjson::Value& vox::networking::JsonPacket::ReadArray(const char* key, int& size)
+rapidjson::Value& unag::networking::JsonPacket::ReadArray(const char* key, int& size)
 {
 	if (m_Document.HasMember(key) && m_Document[key].IsArray())
 	{

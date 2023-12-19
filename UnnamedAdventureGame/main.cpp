@@ -15,7 +15,7 @@
 int main()
 {
 	leap::GameContext::GetInstance().AddLogger<leap::ConsoleLogger>();
-	leap::GameContext::GetInstance().AddLogger<leap::NetworkLogger>();
+	//leap::GameContext::GetInstance().AddLogger<leap::NetworkLogger>();
 
 	leap::LeapEngine engine{ 1280, 720, "Leap game engine" };
 
