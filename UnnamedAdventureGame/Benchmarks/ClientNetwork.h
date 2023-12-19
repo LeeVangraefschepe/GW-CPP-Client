@@ -15,6 +15,7 @@ namespace unag
 		ClientNetwork& operator=(ClientNetwork&& other) = delete;
 	private:
 		virtual void Update() override;
+		virtual void OnGUI() override;
 
 		inline static constexpr int MAX_BUFFER = 65535;
 		leap::networking::LeapClient m_Client{ 7777, "127.0.0.1", MAX_BUFFER, 20 };

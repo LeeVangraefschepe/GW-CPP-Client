@@ -7,13 +7,13 @@
 #include "../Packets/JsonPacket.h"
 #include "Benchmarker.h"
 #include "Json.h"
+#include <ImGui/imgui.h>
 
 unag::ClientNetwork::ClientNetwork()
 {
     m_Client.Run();
     m_Client.SendUDP(leap::networking::BasePacket{});
-    benchmark::Json benchmarker{};
-    benchmarker.FullChunk();
+    
 }
 
 void unag::ClientNetwork::Update()
@@ -24,9 +24,25 @@ void unag::ClientNetwork::Update()
 	    const int id{ recvPacket.ReadHeaderId() };
         benchmark::Json benchmarker{};
 
-
         std::cout << "Received packet with id: " << id << "\n";
         const auto result = benchmarker.TestPacket(id, recvPacket);
         std::cout << "Average time to read out id: " << result << "ms\n\n";
+    }
+}
+
+void unag::ClientNetwork::OnGUI()
+{
+    benchmark::Json benchmarker{};
+
+    ImGui::Begin("Benchmarking");
+    if (ImGui::Button("Chunk", ImVec2{200,30}))
+    {
+        std::cout << "\n\nBenchmarking chunk:\n";
+        benchmarker.FullChunk();
+    }
+    if (ImGui::Button("Input", ImVec2{ 200,30 }))
+    {
+        std::cout << "\n\nBenchmarking input:\n";
+        benchmarker.Input();
     }
 }
