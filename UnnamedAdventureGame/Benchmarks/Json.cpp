@@ -13,7 +13,6 @@ void unag::benchmark::Json::FullChunk()
 {
     networking::JsonPacket packet{};
     std::vector position{ 0,0 };
-    rapidjson::Value biome{ 0 };
 
     constexpr glm::ivec3 chunkSize{ 16, 48, 16 };
     // Create a 3D vector and initialize all elements to 1
@@ -25,7 +24,7 @@ void unag::benchmark::Json::FullChunk()
         )
     );
 
-    auto test = [&packet, &value, &position, &biome]()
+    auto test = [&packet, &value, &position]()
         {
             packet = networking::JsonPacket{20};
 
@@ -46,6 +45,8 @@ void unag::benchmark::Json::FullChunk()
                 jsonArray.PushBack(std::move(outerArray), document.GetAllocator());
             }
 
+            rapidjson::Value biome{ 0};
+
             packet.Write(rapidjson::Value{ "Position" }, position);
             packet.Write(rapidjson::Value{"Biome"}, biome);
             packet.Write(rapidjson::Value{ "Chunk" }, jsonArray);
@@ -54,12 +55,43 @@ void unag::benchmark::Json::FullChunk()
         };
     
     Benchmarker benchmarker{};
-    const auto result = benchmarker.AutoBench(test, 100);
+    auto result = benchmarker.AutoBench(test, 1000);
 
     std::cout << "Size: " << packet.Length() << "\n";
-    std::cout << "Time run: " << result << " ms\n";
+    std::cout << "Time run encoding: " << result << " ms\n";
 
-    FullChunk(packet);
+    result = FullChunk(packet);
+    std::cout << "Time run decoding: " << result << " ms\n";
+}
+
+void unag::benchmark::Json::Input()
+{
+    networking::JsonPacket packet{};
+
+    auto test = [&packet]()
+        {
+            packet = networking::JsonPacket{ 12 };
+
+            rapidjson::Value playerId{ 1564815618 };
+            packet.Write(rapidjson::Value{ "PlayerId" }, playerId);
+
+            rapidjson::Value type{ 58 };
+            packet.Write(rapidjson::Value{ "InputType" }, type);
+
+            rapidjson::Value action{ 2 };
+            packet.Write(rapidjson::Value{ "InputAction" }, type);
+
+            packet.GenerateString();
+        };
+
+    Benchmarker benchmarker{};
+    auto result = benchmarker.AutoBench(test, 1000);
+
+    std::cout << "Size: " << packet.Length() << "\n";
+    std::cout << "Time run encoding: " << result << " ms\n";
+
+    result = Input(packet);
+    std::cout << "Time run decoding: " << result << " ms\n";
 }
 
 #pragma endregion
@@ -69,10 +101,16 @@ void unag::benchmark::Json::FullChunk()
 double unag::benchmark::Json::FullChunk(networking::JsonPacket& packet)
 {
     std::vector<std::vector<std::vector<int>>> threeDArray;
-    int x{}, y{};
+    int x{}, y{}, packetId{};
     char biome{};
-    auto test = [&packet, &threeDArray, &x, &y, &biome]()
+
+    const auto data = packet.GenerateString();
+
+    auto test = [&packet, &data, &threeDArray, &x, &y, &biome, &packetId]()
         {
+            packet.SetData(data);
+            packetId = packet.ReadHeaderId();
+
 			// Read out 3D array
             threeDArray.clear();
             auto& document = packet.GetDocument();
@@ -124,10 +162,35 @@ double unag::benchmark::Json::FullChunk(networking::JsonPacket& packet)
 
 
     Benchmarker benchmarker{};
-    const auto result = benchmarker.AutoBench(test, 50);
+    const auto result = benchmarker.AutoBench(test, 1000);
     std::cout << "Block[0,0,0] " << threeDArray[0][0][0] << "\n";
     std::cout << "Position (" << x << ',' << y << ")\n";
     std::cout << "Biome data " << biome << "\n";
+    return result;
+}
+
+double unag::benchmark::Json::Input(networking::JsonPacket& packet)
+{
+    int packetId{}, playerId{}, inputType{}, inputAction{};
+
+    const auto data = packet.GenerateString();
+
+    auto test = [&packet, &data, &packetId, &playerId, &inputType, &inputAction]()
+        {
+            packet.SetData(data);
+            packetId = packet.ReadHeaderId();
+            playerId = packet.Read("PlayerId").GetInt();
+            inputType = packet.Read("InputType").GetInt();
+            inputAction = packet.Read("InputAction").GetInt();
+        };
+
+
+    Benchmarker benchmarker{};
+    const auto result = benchmarker.AutoBench(test, 1000);
+    std::cout << "PacketId " << packetId << "\n";
+    std::cout << "PlayerId " << playerId << "\n";
+    std::cout << "InputType " << inputType << "\n";
+    std::cout << "InputAction " << inputAction << "\n";
     return result;
 }
 

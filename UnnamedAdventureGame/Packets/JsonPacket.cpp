@@ -22,6 +22,16 @@ void unag::networking::JsonPacket::SetData(std::vector<char>& data)
 	}
 }
 
+void unag::networking::JsonPacket::SetData(const std::string& data)
+{
+	if (m_Document.Parse(data.data()).HasParseError())
+	{
+		std::stringstream ss{};
+		ss << "Parsing error: " << m_Document.GetParseError() << '\n';
+		leap::Debug::LogError(ss.str());
+	}
+}
+
 void unag::networking::JsonPacket::SetData(rapidjson::Document doc)
 {
 	m_Document = std::move(doc);
@@ -32,7 +42,14 @@ void unag::networking::JsonPacket::SetData(rapidjson::Document doc)
 
 char* unag::networking::JsonPacket::GetData()
 {
-	//Todo: Add document to string
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer writer(buffer);
+	m_Document.Accept(writer);
+
+	const char* jsonString = buffer.GetString();
+	size_t jsonStringLength = strlen(jsonString);
+	m_Data = std::vector<char>{ jsonString, jsonString + jsonStringLength };
+
 	return m_Data.data();
 }
 
@@ -70,12 +87,15 @@ void unag::networking::JsonPacket::Write(rapidjson::Value key, const std::vector
 	Write(std::move(key), jsonArray);
 }
 
-void unag::networking::JsonPacket::GenerateString()
+std::string unag::networking::JsonPacket::GenerateString()
 {
 	rapidjson::StringBuffer buffer;
-	rapidjson::Writer writer{ buffer };
+	rapidjson::Writer writer(buffer);
 	m_Document.Accept(writer);
-	m_Data = std::vector<char>{ buffer.GetString(), buffer.GetString() + buffer.GetSize() };
+
+	const char* jsonString = buffer.GetString();
+
+	return std::string{ jsonString };
 }
 
 rapidjson::Value& unag::networking::JsonPacket::Read(const char* key)

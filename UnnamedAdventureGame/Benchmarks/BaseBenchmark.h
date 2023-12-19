@@ -21,5 +21,8 @@ namespace unag::benchmark
 
 	protected:
 		virtual double FullChunk(T& packet) = 0;
+		virtual void FullChunk() = 0;
+		virtual double Input(T& packet) = 0;
+		virtual void Input() = 0;
 	};
 }

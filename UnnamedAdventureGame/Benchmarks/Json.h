@@ -14,9 +14,11 @@ namespace unag::benchmark
 		Json& operator=(const Json& other) = delete;
 		Json& operator=(Json&& other) = delete;
 
-		void FullChunk();
+		void FullChunk() override;
+		void Input() override;
 
 	private:
 		double FullChunk(networking::JsonPacket& packet) override;
+		double Input(networking::JsonPacket& packet) override;
 	};
 }

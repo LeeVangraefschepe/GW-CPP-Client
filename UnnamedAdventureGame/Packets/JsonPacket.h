@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 #include "Interfaces/BasePacket.h"
 #include <vector>
 #include <RapidJson/document.h>
@@ -11,6 +13,7 @@ namespace unag::networking
         explicit JsonPacket(int headerId = -1);
 
         void SetData(std::vector<char>& data) override;
+        void SetData(const std::string& data);
         void SetData(rapidjson::Document doc);
         char* GetData() override;
         rapidjson::Document& GetDocument();
@@ -18,7 +21,7 @@ namespace unag::networking
 
         void Write(rapidjson::Value key, rapidjson::Value& value);
         void Write(rapidjson::Value key, const std::vector<int>& value);
-        void GenerateString();
+        std::string GenerateString();
         rapidjson::Value& Read(const char* key);
         rapidjson::Value& ReadArray(const char* key, int& size);
 	private:
