@@ -21,7 +21,7 @@ namespace leap
 		void OnDebug(const Debug::LogInfo& data) ;
 		bool m_Enabled{};
 
-		inline static constexpr int MAX_BUFFER = 1024;
+		inline static constexpr int MAX_BUFFER = 65535;
 		networking::LeapClient m_Client{ 1234, "127.0.0.1", MAX_BUFFER, 30 };
 	};
 }
