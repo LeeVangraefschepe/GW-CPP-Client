@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Benchmarker.h"
+#include "vec2.hpp"
 #include "vec3.hpp"
 #include "RapidJson/document.h"
 #include "RapidJson/rapidjson.h"
@@ -57,7 +58,8 @@ void unag::benchmark::Json::FullChunk()
     Benchmarker benchmarker{};
     auto result = benchmarker.AutoBench(test, 1000);
 
-    std::cout << "Size: " << packet.Length() << "\n";
+    const std::string text{ packet.GenerateString() };
+    std::cout << "Size: " << text.length() << "\n";
     std::cout << "Time run encoding: " << result << " ms\n";
 
     result = FullChunk(packet);
@@ -78,8 +80,8 @@ void unag::benchmark::Json::Input()
             rapidjson::Value type{ 58 };
             packet.Write(rapidjson::Value{ "InputType" }, type);
 
-            rapidjson::Value action{ 2 };
-            packet.Write(rapidjson::Value{ "InputAction" }, type);
+            rapidjson::Value action{ 2};
+            packet.Write(rapidjson::Value{ "InputAction" }, action);
 
             packet.GenerateString();
         };
@@ -87,10 +89,42 @@ void unag::benchmark::Json::Input()
     Benchmarker benchmarker{};
     auto result = benchmarker.AutoBench(test, 1000);
 
-    std::cout << "Size: " << packet.Length() << "\n";
+    const std::string text{ packet.GenerateString() };
+    std::cout << "Size: " << text.length() << "\n";
     std::cout << "Time run encoding: " << result << " ms\n";
 
     result = Input(packet);
+    std::cout << "Time run decoding: " << result << " ms\n";
+}
+
+void unag::benchmark::Json::BlockUpdate()
+{
+    networking::JsonPacket packet{};
+    std::vector position {100, 72, -500};
+
+    auto test = [&packet, &position]()
+        {
+            packet = networking::JsonPacket{ 11 };
+
+            packet.Write(rapidjson::Value{ "Position" }, position);
+
+            rapidjson::Value type{ 1500 };
+            packet.Write(rapidjson::Value{ "BlockId" }, type);
+
+            rapidjson::Value action{ 4 };
+            packet.Write(rapidjson::Value{ "BlockData" }, action);
+
+            packet.GenerateString();
+        };
+
+    Benchmarker benchmarker{};
+    auto result = benchmarker.AutoBench(test, 10000);
+
+    const std::string text{ packet.GenerateString() };
+    std::cout << "Size: " << text.length() << "\n";
+    std::cout << "Time run encoding: " << result << " ms\n";
+
+    result = BlockUpdate(packet);
     std::cout << "Time run decoding: " << result << " ms\n";
 }
 
@@ -191,6 +225,38 @@ double unag::benchmark::Json::Input(networking::JsonPacket& packet)
     std::cout << "PlayerId " << playerId << "\n";
     std::cout << "InputType " << inputType << "\n";
     std::cout << "InputAction " << inputAction << "\n";
+    return result;
+}
+
+double unag::benchmark::Json::BlockUpdate(networking::JsonPacket& packet)
+{
+    int packetId{}, blockId{}, blockData{};
+    glm::ivec2 position{};
+
+    const auto data = packet.GenerateString();
+
+    auto test = [&packet, &data, &packetId, &position, &blockId, &blockData]()
+        {
+            packet.SetData(data);
+            auto& document = packet.GetDocument();
+
+            packetId = packet.ReadHeaderId();
+
+            const auto positionArray = document["Position"].GetArray();
+            position.x = positionArray[0].GetInt();
+            position.y = positionArray[0].GetInt();
+
+            blockId = packet.Read("BlockId").GetInt();
+            blockData = packet.Read("BlockData").GetInt();
+        };
+
+
+    Benchmarker benchmarker{};
+    const auto result = benchmarker.AutoBench(test, 10000);
+    std::cout << "PacketId " << packetId << "\n";
+    std::cout << "Position (" << position.x << ',' << position.y << ")\n";
+    std::cout << "BlockId " << blockId << "\n";
+    std::cout << "blockData " << blockData << "\n";
     return result;
 }
 

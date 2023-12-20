@@ -45,4 +45,10 @@ void unag::ClientNetwork::OnGUI()
         std::cout << "\n\nBenchmarking input:\n";
         benchmarker.Input();
     }
+    if (ImGui::Button("BlockUpdate", ImVec2{ 200,30 }))
+    {
+        std::cout << "\n\nBenchmarking block update:\n";
+        benchmarker.BlockUpdate();
+    }
+    ImGui::End();
 }

@@ -9,11 +9,13 @@ unag::networking::JsonPacket::JsonPacket(int headerId) : m_HeaderId(headerId)
 	rapidjson::Value newKey{ "PacketId" };
 	rapidjson::Value newValue{ m_HeaderId };
 	m_Document.AddMember(newKey, newValue, m_Document.GetAllocator());
+	m_Allocator = m_Document.GetAllocator();
 }
 
 void unag::networking::JsonPacket::SetData(std::vector<char>& data)
 {
 	m_Document = rapidjson::Document{};
+	m_Allocator = m_Document.GetAllocator();
 	if (m_Document.Parse(data.data()).HasParseError())
 	{
 		std::stringstream ss{};
@@ -35,9 +37,10 @@ void unag::networking::JsonPacket::SetData(const std::string& data)
 void unag::networking::JsonPacket::SetData(rapidjson::Document doc)
 {
 	m_Document = std::move(doc);
+	m_Allocator = m_Document.GetAllocator();
 	rapidjson::Value newKey{ "PacketId" };
 	rapidjson::Value newValue{ m_HeaderId };
-	m_Document.AddMember(newKey, newValue, m_Document.GetAllocator());
+	m_Document.AddMember(newKey, newValue, m_Allocator);
 }
 
 char* unag::networking::JsonPacket::GetData()
@@ -74,7 +77,7 @@ int unag::networking::JsonPacket::ReadHeaderId()
 
 void unag::networking::JsonPacket::Write(rapidjson::Value key, rapidjson::Value& value)
 {
-	m_Document.AddMember(key, value, m_Document.GetAllocator());
+	m_Document.AddMember(key, value, m_Allocator);
 }
 
 void unag::networking::JsonPacket::Write(rapidjson::Value key, const std::vector<int>& value)
@@ -82,20 +85,29 @@ void unag::networking::JsonPacket::Write(rapidjson::Value key, const std::vector
 	rapidjson::Value jsonArray(rapidjson::kArrayType);
 	for (const auto& number : value)
 	{
-		jsonArray.PushBack(number, m_Document.GetAllocator());
+		jsonArray.PushBack(number, m_Allocator);
 	}
 	Write(std::move(key), jsonArray);
 }
 
-std::string unag::networking::JsonPacket::GenerateString()
+void unag::networking::JsonPacket::Write(rapidjson::Value key, const std::vector<float>& value)
+{
+	rapidjson::Value jsonArray(rapidjson::kArrayType);
+	for (const auto& number : value)
+	{
+		jsonArray.PushBack(number, m_Allocator);
+	}
+	Write(std::move(key), jsonArray);
+}
+
+const std::string& unag::networking::JsonPacket::GenerateString()
 {
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer writer(buffer);
 	m_Document.Accept(writer);
 
-	const char* jsonString = buffer.GetString();
-
-	return std::string{ jsonString };
+	m_Text = std::string{ buffer.GetString() };
+	return m_Text;
 }
 
 rapidjson::Value& unag::networking::JsonPacket::Read(const char* key)

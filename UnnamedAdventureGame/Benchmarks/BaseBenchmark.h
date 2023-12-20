@@ -24,5 +24,7 @@ namespace unag::benchmark
 		virtual void FullChunk() = 0;
 		virtual double Input(T& packet) = 0;
 		virtual void Input() = 0;
+		virtual double BlockUpdate(T& packet) = 0;
+		virtual void BlockUpdate() = 0;
 	};
 }

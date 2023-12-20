@@ -16,9 +16,11 @@ namespace unag::benchmark
 
 		void FullChunk() override;
 		void Input() override;
+		void BlockUpdate() override;
 
 	private:
 		double FullChunk(networking::JsonPacket& packet) override;
 		double Input(networking::JsonPacket& packet) override;
+		double BlockUpdate(networking::JsonPacket& packet) override;
 	};
 }

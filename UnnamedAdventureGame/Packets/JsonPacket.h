@@ -21,12 +21,15 @@ namespace unag::networking
 
         void Write(rapidjson::Value key, rapidjson::Value& value);
         void Write(rapidjson::Value key, const std::vector<int>& value);
-        std::string GenerateString();
+        void Write(rapidjson::Value key, const std::vector<float>& value);
+        const std::string& GenerateString();
         rapidjson::Value& Read(const char* key);
         rapidjson::Value& ReadArray(const char* key, int& size);
 	private:
         int m_HeaderId{};
         rapidjson::Document m_Document{};
+        rapidjson::MemoryPoolAllocator<> m_Allocator{};
         rapidjson::Value m_Empty{};
+        std::string m_Text{};
 	};
 }
