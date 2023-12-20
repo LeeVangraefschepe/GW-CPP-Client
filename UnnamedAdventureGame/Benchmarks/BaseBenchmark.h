@@ -26,5 +26,11 @@ namespace unag::benchmark
 		virtual void Input() = 0;
 		virtual double BlockUpdate(T& packet) = 0;
 		virtual void BlockUpdate() = 0;
+		virtual double PlayerUpdate(T& packet) = 0;
+		virtual void PlayerUpdate() = 0;
+		virtual double PlayerJoin(T& packet) = 0;
+		virtual void PlayerJoin() = 0;
+		virtual double ChatMessage(T& packet) = 0;
+		virtual void ChatMessage() = 0;
 	};
 }

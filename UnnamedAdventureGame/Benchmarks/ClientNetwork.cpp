@@ -50,5 +50,20 @@ void unag::ClientNetwork::OnGUI()
         std::cout << "\n\nBenchmarking block update:\n";
         benchmarker.BlockUpdate();
     }
+    if (ImGui::Button("PlayerUpdate", ImVec2{ 200,30 }))
+    {
+        std::cout << "\n\nBenchmarking player update:\n";
+        benchmarker.PlayerUpdate();
+    }
+    if (ImGui::Button("PlayerJoin", ImVec2{ 200,30 }))
+    {
+        std::cout << "\n\nBenchmarking player join:\n";
+        benchmarker.PlayerJoin();
+    }
+    if (ImGui::Button("ChatMessage", ImVec2{ 200,30 }))
+    {
+        std::cout << "\n\nBenchmarking chat message:\n";
+        benchmarker.ChatMessage();
+    }
     ImGui::End();
 }

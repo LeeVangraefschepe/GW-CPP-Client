@@ -128,6 +128,104 @@ void unag::benchmark::Json::BlockUpdate()
     std::cout << "Time run decoding: " << result << " ms\n";
 }
 
+void unag::benchmark::Json::PlayerUpdate()
+{
+    networking::JsonPacket packet{};
+    std::vector position{ 100.f, 72.f, -500.f };
+    std::vector rotation{ 20.f, 50.f, 180.f };
+
+    auto test = [&packet, &position, &rotation]()
+        {
+            packet = networking::JsonPacket{ 10 };
+
+            rapidjson::Value playerId{ 1564815618 };
+            packet.Write(rapidjson::Value{ "PlayerId" }, playerId);
+
+            packet.Write(rapidjson::Value{ "Position" }, position);
+
+            rapidjson::Value health{ 20 };
+            packet.Write(rapidjson::Value{ "Health" }, health);
+
+            rapidjson::Value onGround{ false };
+            packet.Write(rapidjson::Value{ "OnGround" }, onGround);
+
+            packet.Write(rapidjson::Value{ "Rotation" }, rotation);
+
+            packet.Write(rapidjson::Value{ "HeadRotation" }, rotation);
+
+            packet.GenerateString();
+        };
+
+    Benchmarker benchmarker{};
+    auto result = benchmarker.AutoBench(test, 10000);
+
+    const std::string text{ packet.GenerateString() };
+    std::cout << "Size: " << text.length() << "\n";
+    std::cout << "Time run encoding: " << result << " ms\n";
+
+    result = PlayerUpdate(packet);
+    std::cout << "Time run decoding: " << result << " ms\n";
+}
+
+void unag::benchmark::Json::PlayerJoin()
+{
+    networking::JsonPacket packet{};
+    std::vector position{ 100.f, 72.f, -500.f };
+
+    auto test = [&packet, &position]()
+        {
+            packet = networking::JsonPacket{ 13 };
+
+            rapidjson::Value playerId{ 1564815618 };
+            packet.Write(rapidjson::Value{ "PlayerId" }, playerId);
+
+            rapidjson::Value message{ "lee_vgs123457890" };
+            packet.Write(rapidjson::Value{ "Message" }, message);
+
+            packet.Write(rapidjson::Value{ "Position" }, position);
+
+            packet.GenerateString();
+        };
+
+    Benchmarker benchmarker{};
+    auto result = benchmarker.AutoBench(test, 10000);
+
+    const std::string text{ packet.GenerateString() };
+    std::cout << "Size: " << text.length() << "\n";
+    std::cout << "Time run encoding: " << result << " ms\n";
+
+    result = PlayerJoin(packet);
+    std::cout << "Time run decoding: " << result << " ms\n";
+}
+
+void unag::benchmark::Json::ChatMessage()
+{
+    networking::JsonPacket packet{};
+
+    auto test = [&packet]()
+        {
+            packet = networking::JsonPacket{ 14 };
+
+            rapidjson::Value playerId{ 1564815618 };
+            packet.Write(rapidjson::Value{ "PlayerId" }, playerId);
+
+            rapidjson::Value message{ "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis arcu ex, fermentum et faucibus facilisis, eleifend eget lacus. Mauris ex tortor, efficitur sit amet blandit ut, lacinia ultrices ante. Integer condimentum in." };
+            packet.Write(rapidjson::Value{ "Message" }, message);
+
+            packet.GenerateString();
+        };
+
+    Benchmarker benchmarker{};
+    auto result = benchmarker.AutoBench(test, 10000);
+
+    const std::string text{ packet.GenerateString() };
+    std::cout << "Size: " << text.length() << "\n";
+    std::cout << "Time run encoding: " << result << " ms\n";
+
+    result = ChatMessage(packet);
+    std::cout << "Time run decoding: " << result << " ms\n";
+}
+
 #pragma endregion
 
 #pragma region Decoding
@@ -244,7 +342,7 @@ double unag::benchmark::Json::BlockUpdate(networking::JsonPacket& packet)
 
             const auto positionArray = document["Position"].GetArray();
             position.x = positionArray[0].GetInt();
-            position.y = positionArray[0].GetInt();
+            position.y = positionArray[1].GetInt();
 
             blockId = packet.Read("BlockId").GetInt();
             blockData = packet.Read("BlockData").GetInt();
@@ -257,6 +355,117 @@ double unag::benchmark::Json::BlockUpdate(networking::JsonPacket& packet)
     std::cout << "Position (" << position.x << ',' << position.y << ")\n";
     std::cout << "BlockId " << blockId << "\n";
     std::cout << "blockData " << blockData << "\n";
+    return result;
+}
+
+double unag::benchmark::Json::PlayerUpdate(networking::JsonPacket& packet)
+{
+    int packetId{}, playerId{}, health{};
+    bool onGround{};
+    glm::vec3 position{}, rotation{}, headRotation{};
+
+    const auto data = packet.GenerateString();
+
+    auto test = [&packet, &data, &packetId, &position, &playerId, &health, &onGround, &rotation, &headRotation]()
+        {
+            packet.SetData(data);
+            auto& document = packet.GetDocument();
+
+            packetId = packet.ReadHeaderId();
+
+            playerId = packet.Read("PlayerId").GetInt();
+
+            const auto positionArray = document["Position"].GetArray();
+            position.x = positionArray[0].GetFloat();
+            position.y = positionArray[1].GetFloat();
+            position.z = positionArray[2].GetFloat();
+
+            health = packet.Read("Health").GetInt();
+            onGround = packet.Read("OnGround").GetBool();
+
+            const auto rotationArray = document["Rotation"].GetArray();
+            rotation.x = rotationArray[0].GetFloat();
+            rotation.y = rotationArray[1].GetFloat();
+            rotation.z = rotationArray[2].GetFloat();
+
+            const auto headRotationArray = document["HeadRotation"].GetArray();
+            headRotation.x = headRotationArray[0].GetFloat();
+            headRotation.y = headRotationArray[1].GetFloat();
+            headRotation.z = headRotationArray[2].GetFloat();
+        };
+
+
+    Benchmarker benchmarker{};
+    const auto result = benchmarker.AutoBench(test, 10000);
+    std::cout << "PacketId " << packetId << "\n";
+    std::cout << "PlayerId " << playerId << "\n";
+    std::cout << "Position (" << position.x << ',' << position.y << ',' << position.z << ")\n";
+    std::cout << "Health " << health << "\n";
+    std::cout << "OnGround " << onGround << "\n";
+    std::cout << "Rotation (" << rotation.x << ',' << rotation.y << ',' << rotation.z << ")\n";
+    std::cout << "HeadRotation (" << headRotation.x << ',' << headRotation.y << ',' << headRotation.z << ")\n";
+    return result;
+}
+
+double unag::benchmark::Json::PlayerJoin(networking::JsonPacket& packet)
+{
+    int packetId{}, playerId{};
+    glm::vec3 position{};
+    std::string message{};
+
+    const auto data = packet.GenerateString();
+
+    auto test = [&packet, &data, &packetId, &position, &playerId, &message]()
+        {
+            packet.SetData(data);
+            auto& document = packet.GetDocument();
+
+            packetId = packet.ReadHeaderId();
+
+            playerId = packet.Read("PlayerId").GetInt();
+
+            message = std::string{ packet.Read("Message").GetString() };
+
+            const auto positionArray = document["Position"].GetArray();
+            position.x = positionArray[0].GetFloat();
+            position.y = positionArray[1].GetFloat();
+            position.z = positionArray[2].GetFloat();
+        };
+
+
+    Benchmarker benchmarker{};
+    const auto result = benchmarker.AutoBench(test, 10000);
+    std::cout << "PacketId " << packetId << "\n";
+    std::cout << "PlayerId " << playerId << "\n";
+    std::cout << "Message " << message << "\n";
+    std::cout << "Position (" << position.x << ',' << position.y << ',' << position.z << ")\n";
+    return result;
+}
+
+double unag::benchmark::Json::ChatMessage(networking::JsonPacket& packet)
+{
+    int packetId{}, playerId{};
+    std::string message{};
+
+    const auto data = packet.GenerateString();
+
+    auto test = [&packet, &data, &packetId, &playerId, &message]()
+        {
+            packet.SetData(data);
+            
+            packetId = packet.ReadHeaderId();
+
+            playerId = packet.Read("PlayerId").GetInt();
+
+            message = std::string{ packet.Read("Message").GetString() };
+        };
+
+
+    Benchmarker benchmarker{};
+    const auto result = benchmarker.AutoBench(test, 10000);
+    std::cout << "PacketId " << packetId << "\n";
+    std::cout << "PlayerId " << playerId << "\n";
+    std::cout << "Message " << message << "\n";
     return result;
 }
 
