@@ -240,6 +240,7 @@ double unag::benchmark::Json::FullChunk(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &threeDArray, &x, &y, &biome, &packetId]()
         {
+            packet = networking::JsonPacket{};
             packet.SetData(data);
             packetId = packet.ReadHeaderId();
 
@@ -309,6 +310,7 @@ double unag::benchmark::Json::Input(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &playerId, &inputType, &inputAction]()
         {
+            packet = networking::JsonPacket{};
             packet.SetData(data);
             packetId = packet.ReadHeaderId();
             playerId = packet.Read("PlayerId").GetInt();
@@ -335,6 +337,7 @@ double unag::benchmark::Json::BlockUpdate(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &position, &blockId, &blockData]()
         {
+            packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
 
@@ -368,6 +371,7 @@ double unag::benchmark::Json::PlayerUpdate(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &position, &playerId, &health, &onGround, &rotation, &headRotation]()
         {
+            packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
 
@@ -417,6 +421,7 @@ double unag::benchmark::Json::PlayerJoin(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &position, &playerId, &message]()
         {
+            packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
 
@@ -451,6 +456,7 @@ double unag::benchmark::Json::ChatMessage(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &playerId, &message]()
         {
+            packet = networking::JsonPacket{};
             packet.SetData(data);
             
             packetId = packet.ReadHeaderId();
