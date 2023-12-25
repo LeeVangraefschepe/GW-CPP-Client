@@ -8,8 +8,8 @@ unag::networking::JsonPacket::JsonPacket(int headerId) : m_HeaderId(headerId)
 	m_Document.SetObject();
 	rapidjson::Value newKey{ "PacketId" };
 	rapidjson::Value newValue{ m_HeaderId };
-	m_Document.AddMember(newKey, newValue, m_Document.GetAllocator());
 	m_Allocator = m_Document.GetAllocator();
+	m_Document.AddMember(newKey, newValue, m_Allocator);
 }
 
 void unag::networking::JsonPacket::SetData(std::vector<char>& data)
