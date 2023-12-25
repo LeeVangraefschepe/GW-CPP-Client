@@ -43,7 +43,7 @@ target_link_libraries(
 	AudioEngine
 	NetworkingEngine
 	EngineUtils)
-target_include_directories(UnnamedAdventureGame PUBLIC ${LeapEngineIncludeDir} ${RAPIDJSON_DIR})
+target_include_directories(UnnamedAdventureGame PUBLIC ${LeapEngineIncludeDir} ${RAPIDJSON_DIR} ${RAPIDXML_DIR})
 target_link_libraries(UnnamedAdventureGame PUBLIC LeapEngine ${GLFW_LIBRARY_DIR})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
