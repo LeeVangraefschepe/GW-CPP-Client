@@ -5,15 +5,17 @@
 #include "BaseBenchmark.h"
 #include "Leap/LeapPacket.h"
 #include "../Packets/JsonPacket.h"
+#include "../Packets/XmlPacket.h"
 #include "Benchmarker.h"
 #include "Json.h"
 #include <ImGui/imgui.h>
+
+#include "Xml.h"
 
 unag::ClientNetwork::ClientNetwork()
 {
     m_Client.Run();
     m_Client.SendUDP(leap::networking::BasePacket{});
-    
 }
 
 void unag::ClientNetwork::Update()
@@ -32,7 +34,7 @@ void unag::ClientNetwork::Update()
 
 void unag::ClientNetwork::OnGUI()
 {
-    benchmark::Json benchmarker{};
+    benchmark::Xml benchmarker{};
 
     ImGui::Begin("Benchmarking");
     if (ImGui::Button("Chunk", ImVec2{200,30}))
