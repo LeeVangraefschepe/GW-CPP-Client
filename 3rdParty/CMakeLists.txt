@@ -1,9 +1,3 @@
-# 3rdParty CMake
-add_subdirectory(PhysX)
-add_subdirectory(GLM)
-add_subdirectory(FMOD)
-add_subdirectory(GLFW)
-add_subdirectory(FX11)
-add_subdirectory(DirectXTex)
-add_subdirectory(VLD)
-add_subdirectory(Parsers)
+# Parsers CMake
+add_subdirectory(Json)
+add_subdirectory(Xml)
