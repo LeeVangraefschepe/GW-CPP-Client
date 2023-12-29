@@ -5,7 +5,8 @@ add_executable(Benchmarker
 	"Packets/XmlPacket.cpp"
 	"Benchmarks/Json.cpp"
 	"Benchmarks/Xml.cpp"
-	"Packets/Proto/Phone.pb.cc")
+	"Packets/Proto/Phone.pb.cc"
+	"Packets/Proto/Chunk.pb.cc")
 
 target_include_directories(Benchmarker PUBLIC ${RAPIDJSON_DIR} ${RAPIDXML_DIR} ${PROTO_INCLUDE})
 target_link_libraries(Benchmarker PUBLIC ${PROTO_LIB})

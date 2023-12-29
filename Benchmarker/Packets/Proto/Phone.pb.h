@@ -5,6 +5,7 @@
 #pragma warning(disable : 4996)
 #pragma warning(disable : 5054)
 #pragma warning(disable : 4244)
+#pragma warning(disable : 4125)
 
 #ifndef GOOGLE_PROTOBUF_INCLUDED_Phone_2eproto
 #define GOOGLE_PROTOBUF_INCLUDED_Phone_2eproto
