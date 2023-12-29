@@ -14,11 +14,3 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	target_include_directories(Benchmarker PUBLIC ${VLD_INCLUDE_DIR})
 	target_link_libraries(Benchmarker PUBLIC ${VLD_LIBRARY_DIR})
 endif()
-
-file(GLOB_RECURSE SRC_DIR "Packets/Proto/*.cc" "Packets/Proto/*.h")
-
-set_source_files_properties(
-  ${SRC_DIR}
-  PROPERTIES
-  COMPILE_FLAGS "-w"
-)
