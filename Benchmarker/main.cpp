@@ -9,8 +9,10 @@ int main()
 	unag::benchmark::Proto benchmark{};
 
 	std::string line{};
+	int i{};
 	while (true)
 	{
+		std::cout << "Iteration: " << i++ << '\n';
 		std::getline(std::cin, line);
 		if (line.find("stop") != std::string::npos) break;
 
