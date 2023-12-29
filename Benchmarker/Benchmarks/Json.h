@@ -8,7 +8,7 @@ namespace unag::benchmark
 	{
 	public:
 		Json() = default;
-		~Json() = default;
+		virtual ~Json() = default;
 		Json(const Json& other) = delete;
 		Json(Json&& other) = delete;
 		Json& operator=(const Json& other) = delete;

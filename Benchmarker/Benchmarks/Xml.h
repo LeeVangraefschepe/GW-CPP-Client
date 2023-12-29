@@ -8,7 +8,7 @@ namespace unag::benchmark
 	{
 	public:
 		Xml() = default;
-		~Xml() = default;
+		virtual ~Xml() = default;
 		Xml(const Xml& other) = delete;
 		Xml(Xml&& other) = delete;
 		Xml& operator=(const Xml& other) = delete;

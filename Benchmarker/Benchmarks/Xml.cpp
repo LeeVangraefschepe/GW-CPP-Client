@@ -9,7 +9,7 @@ void unag::benchmark::Xml::FullChunk()
     (
         16, std::vector
         (
-            48, std::vector<short>(16, 100)
+            384, std::vector<short>(16, 100)
         )
     );
 

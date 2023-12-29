@@ -17,7 +17,7 @@ void unag::benchmark::Json::FullChunk()
     (
         16, std::vector
         (
-            48, std::vector<short>(16, 100)
+            384, std::vector<short>(16, 100)
         )
     );
 
@@ -366,6 +366,9 @@ double unag::benchmark::Json::PlayerUpdate(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &position, &playerId, &health, &onGround, &rotation, &headRotation]()
         {
+            position.clear();
+            rotation.clear();
+            headRotation.clear();
             packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
@@ -416,6 +419,7 @@ double unag::benchmark::Json::PlayerJoin(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &position, &playerId, &message]()
         {
+            position.clear();
             packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
