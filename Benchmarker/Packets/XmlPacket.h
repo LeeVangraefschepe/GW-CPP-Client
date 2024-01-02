@@ -30,10 +30,10 @@ namespace unag::networking
         char GetUChar(const char* key);
         int GetInt32(const char* key);
         short GetInt16(const char* key);
-        std::vector<float> GetFloat3(const char* key);
+        void GetFloat3(const char* key, std::vector<float>& data);
         bool GetBoolean(const char* key);
-        std::vector<int> GetIVec2(const char* key);
-        std::vector<int> GetIVec3(const char* key);
+        void GetIVec2(const char* key, std::vector<int>& data);
+        void GetIVec3(const char* key, std::vector<int>& data);
         char* GetString(const char* key);
         std::vector<std::vector<std::vector<short>>> GetChunk(const char* key);
 

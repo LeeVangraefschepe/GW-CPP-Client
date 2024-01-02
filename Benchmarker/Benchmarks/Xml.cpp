@@ -23,7 +23,7 @@ void unag::benchmark::Xml::FullChunk()
         };
 
     Benchmarker benchmarker{};
-    auto result = benchmarker.AutoBench(test, 1000);
+    auto result = benchmarker.AutoBench(test, 100);
 
     networking::XmlPacket packet{ 20 };
     packet.SetIVec2(0, 0, "Position");
@@ -181,6 +181,7 @@ double unag::benchmark::Xml::FullChunk(networking::XmlPacket& packet)
 {
     std::vector<std::vector<std::vector<short>>> threeDArray;
     std::vector<int> position;
+    position.resize(2);
     char biome{};
 
     const std::string data{ packet.GenerateString() };
@@ -190,12 +191,12 @@ double unag::benchmark::Xml::FullChunk(networking::XmlPacket& packet)
             const std::string temp = data;
             packet.SetData(temp);
             threeDArray = packet.GetChunk("Chunk");
-            position = packet.GetIVec2("Position");
+            packet.GetIVec2("Position", position);
             biome = packet.GetUChar("Biome");
         };
 
     Benchmarker benchmarker{};
-    const auto result = benchmarker.AutoBench(test, 1000);
+    const auto result = benchmarker.AutoBench(test, 100);
     std::cout << "Block[0,0,0] " << threeDArray[0][0][0] << "\n";
     std::cout << "Position (" << position[0] << ',' << position[1] << ")\n";
     std::cout << "Biome data " << biome << "\n";
@@ -232,6 +233,7 @@ double unag::benchmark::Xml::BlockUpdate(networking::XmlPacket& packet)
 {
     int packetId{}, blockId{}, blockData{};
     std::vector<int> position{};
+    position.resize(3);
 
     const auto data = packet.GenerateString();
 
@@ -240,7 +242,7 @@ double unag::benchmark::Xml::BlockUpdate(networking::XmlPacket& packet)
             const std::string temp = data;
             packet.SetData(temp);
             packetId = packet.ReadHeaderId();
-            position = packet.GetIVec3("Position");
+            packet.GetIVec3("Position", position);
             blockId = packet.GetInt16("BlockId");
             blockData = packet.GetUChar("BlockData");
         };
@@ -260,6 +262,9 @@ double unag::benchmark::Xml::PlayerUpdate(networking::XmlPacket& packet)
     int packetId{}, playerId{}, health{};
     bool onGround{};
     std::vector<float> position{}, rotation{}, headRotation{};
+    position.resize(3);
+    rotation.resize(3);
+    headRotation.resize(3);
 
     const auto data = packet.GenerateString();
 
@@ -269,11 +274,11 @@ double unag::benchmark::Xml::PlayerUpdate(networking::XmlPacket& packet)
             packet.SetData(temp);
             packetId = packet.ReadHeaderId();
             playerId = packet.GetInt32("PlayerId");
-            position = packet.GetFloat3("Position");
+            packet.GetFloat3("Position", position);
             health = packet.GetUChar("Health");
             onGround = packet.GetBoolean("OnGround");
-            rotation = packet.GetFloat3("Rotation");
-            headRotation = packet.GetFloat3("HeadRotation");
+    		packet.GetFloat3("Rotation", rotation);
+            packet.GetFloat3("HeadRotation", headRotation);
         };
 
 
@@ -294,6 +299,7 @@ double unag::benchmark::Xml::PlayerJoin(networking::XmlPacket& packet)
     int packetId{}, playerId{};
     std::string message{};
     std::vector<float> position{};
+    position.resize(3);
 
     const auto data = packet.GenerateString();
 
@@ -303,7 +309,7 @@ double unag::benchmark::Xml::PlayerJoin(networking::XmlPacket& packet)
             packet.SetData(temp);
             packetId = packet.ReadHeaderId();
             playerId = packet.GetInt32("PlayerId");
-            position = packet.GetFloat3("Position");
+            packet.GetFloat3("Position", position);
             message = packet.GetString("Message");
         };
 

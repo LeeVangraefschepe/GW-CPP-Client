@@ -204,10 +204,8 @@ short unag::networking::XmlPacket::GetInt16(const char* key)
     return 0;
 }
 
-std::vector<float> unag::networking::XmlPacket::GetFloat3(const char* key)
+void unag::networking::XmlPacket::GetFloat3(const char* key, std::vector<float>& data)
 {
-    std::vector<float> result{};
-
     const auto root = m_Document.first_node("data");
 
     for (const rapidxml::xml_node<>* node = root->first_node(); node; node = node->next_sibling())
@@ -217,13 +215,11 @@ std::vector<float> unag::networking::XmlPacket::GetFloat3(const char* key)
         const char* xStr = node->first_attribute("x")->value();
         const char* yStr = node->first_attribute("y")->value();
         const char* zStr = node->first_attribute("z")->value();
-        result.push_back(std::stof(xStr));
-        result.push_back(std::stof(yStr));
-        result.push_back(std::stof(zStr));
+        data[0] = std::stof(xStr);
+        data[1] = std::stof(yStr);
+        data[2] = std::stof(zStr);
         break;
     }
-
-    return std::move(result);
 }
 
 bool unag::networking::XmlPacket::GetBoolean(const char* key)
@@ -241,10 +237,8 @@ bool unag::networking::XmlPacket::GetBoolean(const char* key)
     return false;
 }
 
-std::vector<int> unag::networking::XmlPacket::GetIVec2(const char* key)
+void unag::networking::XmlPacket::GetIVec2(const char* key, std::vector<int>& data)
 {
-    std::vector<int> result{};
-
     const auto root = m_Document.first_node("data");
 
     for (const rapidxml::xml_node<>* node = root->first_node(); node; node = node->next_sibling())
@@ -253,18 +247,14 @@ std::vector<int> unag::networking::XmlPacket::GetIVec2(const char* key)
 
         const char* xStr = node->first_attribute("x")->value();
         const char* yStr = node->first_attribute("y")->value();
-        result.push_back(std::stoi(xStr));
-        result.push_back(std::stoi(yStr));
+        data[0] = std::stoi(xStr);
+        data[1] = std::stoi(yStr);
         break;
     }
-
-    return std::move(result);
 }
 
-std::vector<int> unag::networking::XmlPacket::GetIVec3(const char* key)
+void unag::networking::XmlPacket::GetIVec3(const char* key, std::vector<int>& data)
 {
-    std::vector<int> result{};
-
     const auto root = m_Document.first_node("data");
 
     for (const rapidxml::xml_node<>* node = root->first_node(); node; node = node->next_sibling())
@@ -274,13 +264,11 @@ std::vector<int> unag::networking::XmlPacket::GetIVec3(const char* key)
         const char* xStr = node->first_attribute("x")->value();
         const char* yStr = node->first_attribute("y")->value();
         const char* zStr = node->first_attribute("z")->value();
-        result.push_back(std::stoi(xStr));
-        result.push_back(std::stoi(yStr));
-        result.push_back(std::stoi(zStr));
+        data[0] = std::stoi(xStr);
+        data[1] = std::stoi(yStr);
+        data[2] = std::stoi(zStr);
         break;
     }
-
-    return std::move(result);
 }
 
 char* unag::networking::XmlPacket::GetString(const char* key)
