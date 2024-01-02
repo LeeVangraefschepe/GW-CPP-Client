@@ -183,12 +183,12 @@ double unag::benchmark::Xml::FullChunk(networking::XmlPacket& packet)
     std::vector<int> position;
     char biome{};
 
-    const std::string kankerCPP{ packet.GenerateString() };
     const std::string data{ packet.GenerateString() };
 
-    packet.SetData(data);
-    auto test = [&packet, &threeDArray, &position, &biome]()
+    auto test = [&packet, &threeDArray, &position, &biome, &data]()
         {
+            const std::string temp = data;
+            packet.SetData(temp);
             threeDArray = packet.GetChunk("Chunk");
             position = packet.GetIVec2("Position");
             biome = packet.GetUChar("Biome");
@@ -207,10 +207,11 @@ double unag::benchmark::Xml::Input(networking::XmlPacket& packet)
     int packetId{}, playerId{}, inputType{}, inputAction{};
 
     const auto data = packet.GenerateString();
-
-    packet.SetData(data);
-    auto test = [&packet, &packetId, &playerId, &inputType, &inputAction]()
+    
+    auto test = [&packet, &packetId, &playerId, &inputType, &inputAction, &data]()
         {
+	        const std::string temp = data;
+            packet.SetData(temp);
     		packetId = packet.ReadHeaderId();
             playerId = packet.GetInt32("PlayerId");
             inputType = packet.GetUChar("InputType");
@@ -234,9 +235,10 @@ double unag::benchmark::Xml::BlockUpdate(networking::XmlPacket& packet)
 
     const auto data = packet.GenerateString();
 
-    packet.SetData(data);
-    auto test = [&packet, &packetId, &position, &blockId, &blockData]()
+    auto test = [&packet, &packetId, &position, &blockId, &blockData, &data]()
         {
+            const std::string temp = data;
+            packet.SetData(temp);
             packetId = packet.ReadHeaderId();
             position = packet.GetIVec3("Position");
             blockId = packet.GetInt16("BlockId");
@@ -261,9 +263,10 @@ double unag::benchmark::Xml::PlayerUpdate(networking::XmlPacket& packet)
 
     const auto data = packet.GenerateString();
 
-    packet.SetData(data);
-    auto test = [&packet, &packetId, &playerId, &health, &onGround, &position, &rotation, &headRotation]()
+    auto test = [&packet, &packetId, &playerId, &health, &onGround, &position, &rotation, &headRotation, &data]()
         {
+            const std::string temp = data;
+            packet.SetData(temp);
             packetId = packet.ReadHeaderId();
             playerId = packet.GetInt32("PlayerId");
             position = packet.GetFloat3("Position");
@@ -294,9 +297,10 @@ double unag::benchmark::Xml::PlayerJoin(networking::XmlPacket& packet)
 
     const auto data = packet.GenerateString();
 
-    packet.SetData(data);
-    auto test = [&packet, &packetId, &position, &playerId, &message]()
+    auto test = [&packet, &packetId, &position, &playerId, &message, &data]()
         {
+            const std::string temp = data;
+            packet.SetData(temp);
             packetId = packet.ReadHeaderId();
             playerId = packet.GetInt32("PlayerId");
             position = packet.GetFloat3("Position");
@@ -320,9 +324,10 @@ double unag::benchmark::Xml::ChatMessage(networking::XmlPacket& packet)
 
     const auto data = packet.GenerateString();
 
-    packet.SetData(data);
-    auto test = [&packet, &packetId, &playerId, &message]()
+    auto test = [&packet, &packetId, &playerId, &message, &data]()
         {
+            const std::string temp = data;
+            packet.SetData(temp);
             packetId = packet.ReadHeaderId();
             playerId = packet.GetInt32("PlayerId");
             message = packet.GetString("Message");
