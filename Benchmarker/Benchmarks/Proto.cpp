@@ -20,7 +20,8 @@ void unag::benchmark::Proto::FullChunk()
 		)
 	);
 
-	auto test = [&packet, &value]()
+	std::string text{};
+	auto test = [&packet, &value, &text]()
 		{
 			packet = packet::ChunkData{};
 			packet.set_packetid(20);
@@ -37,13 +38,12 @@ void unag::benchmark::Proto::FullChunk()
 					slice->mutable_values()->Add(sliceVector.begin(), sliceVector.end());
 				}
 			}
-			packet.SerializeAsString();
+			packet.SerializeToString(&text);
 		};
 
 	Benchmarker benchmarker{};
 	auto result = benchmarker.AutoBench(test, 1000);
 
-	std::string text{ packet.SerializeAsString() };
 	std::cout << "Size: " << text.size() << "\n";
 	std::cout << "Time run encoding: " << result << " ms\n";
 
@@ -54,20 +54,20 @@ void unag::benchmark::Proto::FullChunk()
 void unag::benchmark::Proto::Input()
 {
 	packet::Input packet{};
-	auto test = [&packet]()
+	std::string text{};
+	auto test = [&packet, &text]()
 		{
 			packet = packet::Input{};
 			packet.set_packetid(12);
 			packet.set_playerid(1564815618);
 			packet.set_inputtype(58);
 			packet.set_inputaction(2);
-			packet.SerializeAsString();
+			packet.SerializeToString(&text);
 		};
 
 	Benchmarker benchmarker{};
 	auto result = benchmarker.AutoBench(test, 1000);
 
-	std::string text{ packet.SerializeAsString() };
 	std::cout << "Size: " << text.length() << "\n";
 	std::cout << "Time run encoding: " << result << " ms\n";
 
@@ -78,8 +78,9 @@ void unag::benchmark::Proto::Input()
 void unag::benchmark::Proto::BlockUpdate()
 {
 	packet::BlockUpdate packet{};
+	std::string text{};
 
-	auto test = [&packet]()
+	auto test = [&packet, &text]()
 		{
 			packet = packet::BlockUpdate{};
 			packet.set_packetid(11);
@@ -88,13 +89,12 @@ void unag::benchmark::Proto::BlockUpdate()
 			packet.mutable_position()->set_z(-500);
 			packet.set_block(1500);
 			packet.set_blockdata(4);
-			packet.SerializeAsString();
+			packet.SerializeToString(&text);
 		};
 
 	Benchmarker benchmarker{};
 	auto result = benchmarker.AutoBench(test, 10000);
 
-	std::string text{ packet.SerializeAsString() };
 	std::cout << "Size: " << text.length() << "\n";
 	std::cout << "Time run encoding: " << result << " ms\n";
 
@@ -105,8 +105,9 @@ void unag::benchmark::Proto::BlockUpdate()
 void unag::benchmark::Proto::PlayerUpdate()
 {
 	packet::PlayerUpdate packet{};
+	std::string text{};
 
-	auto test = [&packet]()
+	auto test = [&packet, &text]()
 		{
 			packet = packet::PlayerUpdate{ };
 
@@ -124,13 +125,12 @@ void unag::benchmark::Proto::PlayerUpdate()
 			packet.mutable_headrotation()->set_y(50.f);
 			packet.mutable_headrotation()->set_z(180.f);
 
-			packet.SerializeAsString();
+			packet.SerializeToString(&text);
 		};
 
 	Benchmarker benchmarker{};
 	auto result = benchmarker.AutoBench(test, 10000);
 
-	std::string text{ packet.SerializeAsString() };
 	std::cout << "Size: " << text.length() << "\n";
 	std::cout << "Time run encoding: " << result << " ms\n";
 
@@ -141,7 +141,8 @@ void unag::benchmark::Proto::PlayerUpdate()
 void unag::benchmark::Proto::PlayerJoin()
 {
 	packet::PlayerJoin packet{};
-	auto test = [&packet]()
+	std::string text{};
+	auto test = [&packet, &text]()
 		{
 			packet = packet::PlayerJoin{};
 			packet.set_playerid(13);
@@ -150,13 +151,12 @@ void unag::benchmark::Proto::PlayerJoin()
 			packet.mutable_position()->set_x(100.f);
 			packet.mutable_position()->set_y(72.f);
 			packet.mutable_position()->set_z(-500.f);
-			packet.SerializeAsString();
+			packet.SerializeToString(&text);
 		};
 
 	Benchmarker benchmarker{};
 	auto result = benchmarker.AutoBench(test, 10000);
 
-	std::string text{ packet.SerializeAsString() };
 	std::cout << "Size: " << text.length() << "\n";
 	std::cout << "Time run encoding: " << result << " ms\n";
 
@@ -167,19 +167,19 @@ void unag::benchmark::Proto::PlayerJoin()
 void unag::benchmark::Proto::ChatMessage()
 {
 	packet::ChatMessage packet{};
-	auto test = [&packet]()
+	std::string text{};
+	auto test = [&packet, &text]()
 		{
 			packet = packet::ChatMessage{};
 			packet.set_playerid(14);
 			packet.set_playerid(1564815618);
 			packet.set_message("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis arcu ex, fermentum et faucibus facilisis, eleifend eget lacus. Mauris ex tortor, efficitur sit amet blandit ut, lacinia ultrices ante. Integer condimentum in.");
-			packet.SerializeAsString();
+			packet.SerializeToString(&text);
 		};
 
 	Benchmarker benchmarker{};
 	auto result = benchmarker.AutoBench(test, 10000);
-
-	std::string text{ packet.SerializeAsString() };
+	
 	std::cout << "Size: " << text.length() << "\n";
 	std::cout << "Time run encoding: " << result << " ms\n";
 
@@ -287,34 +287,33 @@ double unag::benchmark::Proto::PlayerUpdate(std::string& data)
 	int packetId{}, playerId{}, health{};
 	bool onGround{};
 	std::vector<float> position{}, rotation{}, headRotation{};
+	position.resize(3);
+	rotation.resize(3);
+	headRotation.resize(3);
 
 	packet::PlayerUpdate packet{};
 
 	auto test = [&packet, &data, &packetId, &position, &playerId, &health, &onGround, &rotation, &headRotation]()
 		{
-			position.clear();
-			rotation.clear();
-			headRotation.clear();
-
 			packet.ParseFromString(data);
 
 			packetId = packet.packetid();
 			playerId = packet.playerid();
 
-			position.push_back(packet.position().x());
-			position.push_back(packet.position().y());
-			position.push_back(packet.position().z());
+			position[0] = packet.position().x();
+			position[1] = packet.position().y();
+			position[2] = packet.position().z();
 
 			health = packet.health();
 			onGround = packet.onground();
 
-			rotation.push_back(packet.rotation().x());
-			rotation.push_back(packet.rotation().y());
-			rotation.push_back(packet.rotation().z());
+			rotation[0] = packet.rotation().x();
+			rotation[1] = packet.rotation().y();
+			rotation[2] = packet.rotation().z();
 
-			headRotation.push_back(packet.headrotation().x());
-			headRotation.push_back(packet.headrotation().y());
-			headRotation.push_back(packet.headrotation().z());
+			headRotation[0] = packet.headrotation().x();
+			headRotation[1] = packet.headrotation().y();
+			headRotation[2] = packet.headrotation().z();
 		};
 
 
@@ -334,6 +333,7 @@ double unag::benchmark::Proto::PlayerJoin(std::string& data)
 {
 	int packetId{}, playerId{};
 	std::vector<float> position{};
+	position.resize(3);
 	std::string message{};
 
 	packet::PlayerJoin packet{ };
@@ -347,9 +347,9 @@ double unag::benchmark::Proto::PlayerJoin(std::string& data)
 			packetId = packet.packetid();
 			playerId = packet.playerid();
 			message = packet.message();
-			position.push_back(packet.position().x());
-			position.push_back(packet.position().y());
-			position.push_back(packet.position().z());
+			position[0] = packet.position().x();
+			position[1] = packet.position().y();
+			position[2] = packet.position().z();
 		};
 
 
