@@ -39,7 +39,7 @@ void unag::networking::XmlPacket::SetData(const std::string& data)
 
 char* unag::networking::XmlPacket::GetData()
 {
-    print(std::back_inserter(m_Data), m_Document, 0);
+    print(std::back_inserter(m_Data), m_Document, rapidxml::print_no_indenting);
     return m_Data.data();
 }
 
@@ -320,7 +320,7 @@ const std::string& unag::networking::XmlPacket::GenerateString()
     m_Data.clear(); // Clear the existing data
 
     // Use RapidXML's print function to generate the XML string
-    rapidxml::print(std::back_inserter(m_Data), m_Document, 0);
+    rapidxml::print(std::back_inserter(m_Data), m_Document, rapidxml::print_no_indenting);
 
     // Copy the generated data to m_Text
     m_Text = std::string(m_Data.begin(), m_Data.end());

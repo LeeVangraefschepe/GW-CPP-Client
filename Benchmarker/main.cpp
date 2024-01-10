@@ -6,7 +6,7 @@
 
 int main()
 {
-	unag::benchmark::Proto benchmark{};
+	unag::benchmark::Xml benchmark{};
 
 	std::string line{};
 	int i{};
