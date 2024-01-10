@@ -236,7 +236,6 @@ double unag::benchmark::Json::FullChunk(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &threeDArray, &x, &y, &biome, &packetId]()
         {
-            packet = networking::JsonPacket{};
             packet.SetData(data);
             packetId = packet.ReadHeaderId();
 
@@ -306,7 +305,6 @@ double unag::benchmark::Json::Input(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &playerId, &inputType, &inputAction]()
         {
-            packet = networking::JsonPacket{};
             packet.SetData(data);
             packetId = packet.ReadHeaderId();
             playerId = packet.Read("PlayerId").GetInt();
@@ -332,7 +330,6 @@ double unag::benchmark::Json::BlockUpdate(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &x, &y, &blockId, &blockData]()
         {
-            packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
 
@@ -369,7 +366,6 @@ double unag::benchmark::Json::PlayerUpdate(networking::JsonPacket& packet)
             position.clear();
             rotation.clear();
             headRotation.clear();
-            packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
 
@@ -414,13 +410,12 @@ double unag::benchmark::Json::PlayerJoin(networking::JsonPacket& packet)
     int packetId{}, playerId{};
     std::vector<float> position{};
     std::string message{};
+    position.resize(3);
 
     const auto data = packet.GenerateString();
 
     auto test = [&packet, &data, &packetId, &position, &playerId, &message]()
         {
-            position.clear();
-            packet = networking::JsonPacket{};
             packet.SetData(data);
             auto& document = packet.GetDocument();
 
@@ -431,9 +426,9 @@ double unag::benchmark::Json::PlayerJoin(networking::JsonPacket& packet)
             message = std::string{ packet.Read("Message").GetString() };
 
             const auto positionArray = document["Position"].GetArray();
-            position.push_back(positionArray[0].GetFloat());
-            position.push_back(positionArray[1].GetFloat());
-            position.push_back(positionArray[2].GetFloat());
+            position[0] = positionArray[0].GetFloat();
+            position[1] = positionArray[1].GetFloat();
+            position[2] = positionArray[2].GetFloat();
         };
 
 
@@ -455,7 +450,6 @@ double unag::benchmark::Json::ChatMessage(networking::JsonPacket& packet)
 
     auto test = [&packet, &data, &packetId, &playerId, &message]()
         {
-            packet = networking::JsonPacket{};
             packet.SetData(data);
             
             packetId = packet.ReadHeaderId();
